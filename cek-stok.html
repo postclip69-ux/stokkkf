@@ -50,7 +50,31 @@
       border-radius: 12px;
       box-shadow: var(--box-shadow);
       overflow: hidden; 
+      position: relative; /* Penting untuk penempatan watermark */
     }
+
+    /* === CSS BARU UNTUK WATERMARK === */
+    .watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Posisikan persis di tengah */
+        width: 80%; /* Sesuaikan ukuran logo */
+        height: auto;
+        opacity: 0.1; /* Opasitas rendah */
+        pointer-events: none; /* Agar tidak mengganggu interaksi mouse */
+        z-index: 1; /* Pastikan di bawah konten tabel */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .watermark img {
+        max-width: 100%; /* Pastikan gambar tidak melebihi container watermark */
+        height: auto;
+        display: block; /* Hapus spasi di bawah gambar */
+    }
+    /* === AKHIR CSS WATERMARK === */
 
     .product-header {
       padding: 18px 0;
@@ -60,12 +84,17 @@
       font-size: 20px;
       font-weight: bold;
       margin-bottom: 0;
+      position: relative; /* Penting agar header di atas watermark */
+      z-index: 2;
     }
 
     .stock-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 16px;
+      position: relative; /* Penting agar tabel di atas watermark */
+      z-index: 2;
+      background-color: rgba(255, 255, 255, 0); /* Buat background transparan agar watermark terlihat */
     }
 
     .stock-table th {
@@ -97,6 +126,8 @@
       font-size: 13px;
       color: var(--muted);
       padding: 15px 0 20px;
+      position: relative; /* Penting agar teks di atas watermark */
+      z-index: 2;
     }
 
     .button-container {
@@ -131,6 +162,9 @@
       <div class="panel">
           <h1 class="product-header">Stok Produk XL/AXIS</h1>
           
+          <div class="watermark">
+              <img src="images/logo-fauzian-store.png" alt="Fauzian Store Logo">
+          </div>
           <table id="stock-table" class="stock-table">
             <thead>
               <tr>
@@ -159,19 +193,14 @@
   <script>
     const stockBody = document.getElementById("stock-data-body");
     const lastUpdateEl = document.getElementById("last-update");
-    const REFRESH_INTERVAL = 1000; // Interval 1 Detik sesuai permintaan Anda
+    const REFRESH_INTERVAL = 1000; // Interval 1 Detik
 
-    /**
-     * Fungsi untuk merender data stok ke dalam tabel HTML.
-     * Dibuat untuk membaca j.list dari API Anda.
-     */
     function renderStockTable(stockList, updateTime, emptyMessage = "Stok Kosong / Tidak Tersedia.") {
         let html = '';
         
         if (!stockList || stockList.length === 0) {
             html = `<tr><td colspan="3" style="text-align:center; color:var(--muted); padding: 40px;">${emptyMessage}</td></tr>`;
         } else {
-            // Loop data dari j.list
             stockList.forEach(item => {
                 const stok = parseInt(item.stock) || 0; 
                 const stokClass = stok > 0 ? 'stok-value-ok' : 'stok-value-empty';
@@ -190,12 +219,8 @@
         lastUpdateEl.innerHTML = `Terakhir diperbarui: <span style="font-weight: bold;">${updateTime}</span>`;
     }
 
-    /**
-     * Fungsi fetchStok yang dimodifikasi.
-     * Hanya mengambil /api/stok (XLA) dan memanggil renderStockTable.
-     */
     async function fetchAndRenderStok() {
-      if (document.hidden) return; // Jangan fetch jika tab tidak aktif
+      if (document.hidden) return; 
       
       let updateTime = "Gagal";
       try {
@@ -211,22 +236,16 @@
           return;
         }
 
-        // Menggunakan j.list (lebih baik) daripada j.text
         renderStockTable(j.list, updateTime, "Stok kosong / belum tersedia.");
 
       } catch (e) {
-        // Jika fetch gagal total
         updateTime = new Date().toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/:/g, '.');
         renderStockTable([], updateTime, `Gagal memuat (${e.message || "error"})`);
       }
     }
 
-    // Event Listeners
     document.addEventListener("DOMContentLoaded", () => {
-        // Muat data saat halaman dibuka
         fetchAndRenderStok();
-        
-        // Atur interval refresh (1 detik)
         setInterval(fetchAndRenderStok, REFRESH_INTERVAL); 
     });
   </script>
