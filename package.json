@@ -1,6 +1,6 @@
 {
-  "name": "stokakrab-fauzianstoreaksatu",
-  "private": true,
-  "type": "commonjs",
-  "engines": { "node": ">=18" }
+  "name": "stokakrab-mangxstore",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": ">=18" }
 }
