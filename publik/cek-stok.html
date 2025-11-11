@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Stok Produk XL/AXIS</title>
+  <title>Stok Produk Akrab</title>
   <meta name="theme-color" content="#2678f1"/> 
   <style>
-    /* ... (CSS Dihilangkan, tetap sama dengan yang Anda berikan) ... */
+    /* ======================================
+    TAMPILAN BARU (Sesuai Gambar)
+    ======================================
+    */
     :root{
       --bg-top: #cfe8ff; 
       --bg-bottom: #97c2f1; 
@@ -119,7 +122,6 @@
     }
     .btn-buy:hover{background-color: #3f79d5;}
     
-    .toast, .footer { display: none !important; }
   </style>
 </head>
 <body>
@@ -143,43 +145,41 @@
           </table>
 
           <div id="last-update" class="last-update">
-            </div>
+            Terakhir diperbarui: Memuat...
+          </div>
 
       </div>
 
       <div class="button-container">
-          <button id="btn-buy" class="btn-buy" onclick="window.location.href='#'">Beli Paket Akrab</button>
+          <button id="btn-buy" class="btn-buy" onclick="window.location.href='https://api.whatsapp.com/send/?phone=6283110690513&text&type=phone_number&app_absent=0&wame_ctl=1'">Beli Paket Akrab</button>
       </div>
       
   </main>
 
-  <script src="stok.js"></script>
-
   <script>
     const stockBody = document.getElementById("stock-data-body");
     const lastUpdateEl = document.getElementById("last-update");
-    const btnBuy = document.getElementById("btn-buy");
-    const REFRESH_INTERVAL = 6000; // Interval di HTML digunakan untuk refresh tampilan
+    const REFRESH_INTERVAL = 1000; // Interval 1 Detik sesuai permintaan Anda
 
     /**
-     * Mengubah data stok menjadi baris tabel HTML dan memperbarui elemen DOM.
-     * Mengambil data dari variabel global yang diisi oleh stok.js.
+     * Fungsi untuk merender data stok ke dalam tabel HTML.
+     * Dibuat untuk membaca j.list dari API Anda.
      */
-    function renderStockTable(stockData, updateTime) {
+    function renderStockTable(stockList, updateTime, emptyMessage = "Stok Kosong / Tidak Tersedia.") {
         let html = '';
         
-        if (!stockData || stockData.length === 0 || updateTime.includes('Gagal')) {
-            let message = updateTime.includes('Gagal') ? updateTime : "Stok Kosong / Tidak Tersedia.";
-             html = `<tr><td colspan="3" style="text-align:center; color:var(--muted); padding: 40px;">${message}</td></tr>`;
+        if (!stockList || stockList.length === 0) {
+            html = `<tr><td colspan="3" style="text-align:center; color:var(--muted); padding: 40px;">${emptyMessage}</td></tr>`;
         } else {
-            stockData.forEach(item => {
-                const stok = parseInt(item.stok) || 0; 
+            // Loop data dari j.list
+            stockList.forEach(item => {
+                const stok = parseInt(item.stock) || 0; 
                 const stokClass = stok > 0 ? 'stok-value-ok' : 'stok-value-empty';
                 
                 html += `
                     <tr>
-                      <td class="col-kode">${item.kode || '-'}</td>
-                      <td class="col-nama">${item.nama || 'Nama Produk'}</td>
+                      <td class="col-kode">${item.sku || '-'}</td>
+                      <td class="col-nama">${item.name || 'Nama Produk'}</td>
                       <td class="col-stok"><span class="${stokClass}">${stok}</span></td>
                     </tr>
                 `;
@@ -191,29 +191,43 @@
     }
 
     /**
-     * Fungsi untuk memperbarui tampilan dengan data terbaru.
+     * Fungsi fetchStok yang dimodifikasi.
+     * Hanya mengambil /api/stok (XLA) dan memanggil renderStockTable.
      */
-    function updateStokDisplay() {
-        // Cek apakah variabel global sudah tersedia (dibuat oleh stok.js)
-        if (typeof globalStockData === 'undefined' || typeof globalUpdateTime === 'undefined') {
-             stockBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--stock-empty); padding: 40px;">❌ Memuat stok.js... Harap tunggu sebentar.</td></tr>`;
-             return;
+    async function fetchAndRenderStok() {
+      if (document.hidden) return; // Jangan fetch jika tab tidak aktif
+      
+      let updateTime = "Gagal";
+      try {
+        const r = await fetch("/api/stok?ts=" + Date.now(), { cache: "no-store" });
+        const j = await r.json();
+
+        const now = new Date();
+        updateTime = now.toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/:/g, '.');
+
+        if (!r.ok || j.ok === false) {
+          const msg = j?.error || j?.message || "Gagal memuat";
+          renderStockTable([], updateTime, msg);
+          return;
         }
 
-        // Render tampilan menggunakan data yang sudah di-fetch oleh stok.js
-        renderStockTable(globalStockData, globalUpdateTime);
+        // Menggunakan j.list (lebih baik) daripada j.text
+        renderStockTable(j.list, updateTime, "Stok kosong / belum tersedia.");
+
+      } catch (e) {
+        // Jika fetch gagal total
+        updateTime = new Date().toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/:/g, '.');
+        renderStockTable([], updateTime, `Gagal memuat (${e.message || "error"})`);
+      }
     }
 
     // Event Listeners
     document.addEventListener("DOMContentLoaded", () => {
         // Muat data saat halaman dibuka
-        updateStokDisplay(); 
+        fetchAndRenderStok();
         
-        // Atur interval refresh untuk memperbarui tampilan (6 detik)
-        // Interval ini MENGAMBIL data dari variabel yang terus diperbarui oleh interval di stok.js
-        setInterval(updateStokDisplay, REFRESH_INTERVAL); 
-        
-        // Tombol Beli Paket Akrab sudah diatur dengan onclick di HTML
+        // Atur interval refresh (1 detik)
+        setInterval(fetchAndRenderStok, REFRESH_INTERVAL); 
     });
   </script>
 </body>
