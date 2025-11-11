@@ -54,20 +54,7 @@
     }
 
     /* === CSS BARU UNTUK WATERMARK === */
-    .watermark {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%); /* Posisikan persis di tengah */
-        width: 80%; /* Sesuaikan ukuran logo */
-        height: auto;
-        opacity: 0.1; /* Opasitas rendah */
-        pointer-events: none; /* Agar tidak mengganggu interaksi mouse */
-        z-index: 1; /* Pastikan di bawah konten tabel */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+    
 
     .watermark img {
         max-width: 100%; /* Pastikan gambar tidak melebihi container watermark */
@@ -92,7 +79,35 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 16px;
-      position: relative; /* Penting agar tabel di atas watermark */
+      position: relative; /* Penting agar tabel di atas watermark *    .watermark {
+        position: absolute;
+        top: 55%; /* DIUBAH: Digeser ke bawah (dari 50%) */
+        left: 50%;
+        transform: translate(-50%, -50%); 
+        width: 90%; /* DIUBAH: Logo diperbesar (dari 80%) */
+        height: auto;
+        opacity: 0.1; 
+        pointer-events: none; 
+        z-index: 1; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .watermark {
+        position: absolute;
+        top: 55%; /* DIUBAH: Digeser ke bawah (dari 50%) */
+        left: 50%;
+        transform: translate(-50%, -50%); 
+        width: 90%; /* DIUBAH: Logo diperbesar (dari 80%) */
+        height: auto;
+        opacity: 0.1; 
+        pointer-events: none; 
+        z-index: 1; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
       z-index: 2;
       background-color: rgba(255, 255, 255, 0); /* Buat background transparan agar watermark terlihat */
     }
