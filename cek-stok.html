@@ -6,10 +6,6 @@
   <title>Stok Produk Akrab</title>
   <meta name="theme-color" content="#2678f1"/> 
   <style>
-    /* ======================================
-    TAMPILAN BARU (Sesuai Gambar)
-    ======================================
-    */
     :root{
       --bg-top: #cfe8ff; 
       --bg-bottom: #97c2f1; 
@@ -53,46 +49,7 @@
       position: relative; /* Penting untuk penempatan watermark */
     }
 
-    /* === CSS BARU UNTUK WATERMARK === */
-    
-
-    .watermark img {
-        max-width: 100%; /* Pastikan gambar tidak melebihi container watermark */
-        height: auto;
-        display: block; /* Hapus spasi di bawah gambar */
-    }
-    /* === AKHIR CSS WATERMARK === */
-
-    .product-header {
-      padding: 18px 0;
-      background-color: var(--header-bg);
-      color: var(--header-text);
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 0;
-      position: relative; /* Penting agar header di atas watermark */
-      z-index: 2;
-    }
-
-    .stock-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 16px;
-      position: relative; /* Penting agar tabel di atas watermark *    .watermark {
-        position: absolute;
-        top: 55%; /* DIUBAH: Digeser ke bawah (dari 50%) */
-        left: 50%;
-        transform: translate(-50%, -50%); 
-        width: 90%; /* DIUBAH: Logo diperbesar (dari 80%) */
-        height: auto;
-        opacity: 0.1; 
-        pointer-events: none; 
-        z-index: 1; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+    /* === CSS WATERMARK YANG DIPERBARUI === */
     .watermark {
         position: absolute;
         top: 55%; /* DIUBAH: Digeser ke bawah (dari 50%) */
@@ -107,9 +64,33 @@
         justify-content: center;
         align-items: center;
     }
-    
+
+    .watermark img {
+        max-width: 100%; 
+        height: auto;
+        display: block; 
+    }
+    /* === AKHIR CSS WATERMARK === */
+
+    .product-header {
+      padding: 18px 0;
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 0;
+      position: relative; 
       z-index: 2;
-      background-color: rgba(255, 255, 255, 0); /* Buat background transparan agar watermark terlihat */
+    }
+
+    .stock-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+      position: relative; 
+      z-index: 2;
+      background-color: rgba(255, 255, 255, 0); 
     }
 
     .stock-table th {
@@ -141,7 +122,7 @@
       font-size: 13px;
       color: var(--muted);
       padding: 15px 0 20px;
-      position: relative; /* Penting agar teks di atas watermark */
+      position: relative; 
       z-index: 2;
     }
 
@@ -180,6 +161,7 @@
           <div class="watermark">
               <img src="images/logo-fauzian-store.png" alt="Fauzian Store Logo">
           </div>
+          
           <table id="stock-table" class="stock-table">
             <thead>
               <tr>
